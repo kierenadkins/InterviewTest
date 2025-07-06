@@ -30,8 +30,8 @@
                     <td>
                         @item.Email
                     </td>
-                    <td>
-                        @(item.IsActive ? "Yes" : "No")
+                    <td
+                        data-status="@item.IsActive">@((item.IsActive) ? "Yes" : "No")
                     </td>
                     <td>
                         <div class="dropdown">
@@ -52,14 +52,31 @@
 </div>
 
 <div>
-    <div class="btn-group" role="group">
-        <a asp-controller="Users" asp-action="List" class="btn btn-default">Show All</a>
-        <a href="#" class="btn btn-default">Active Only</a>
-        <a href="#" class="btn btn-default">Non Active</a>
-    </div>
+        <div class="btn-group" role="group">
+            <button class="btn btn-default" onclick="filterUsers('all')">Show All</button>
+            <button class="btn btn-default" onclick="filterUsers('active')">Active Only</button>
+            <button class="btn btn-default" onclick="filterUsers('inactive')">Non Active</button>
+        </div>
 
     <a href="#" class="btn btn-primary float-end">
         Add User
     </a>
 </div>
 
+<script>
+   function filterUsers(status) {
+    const rows = document.querySelectorAll('table tbody tr');
+    rows.forEach(row => {
+        const statusRow = row.querySelector('td[data-status]');
+        const isActive = statusRow.getAttribute('data-status') === 'True';
+
+        if (status === 'all') {
+            row.style.display = '';
+        } else if (status === 'active') {
+            row.style.display = isActive ? '' : 'none';
+        } else if (status === 'inactive') {
+            row.style.display = !isActive ? '' : 'none';
+        }
+    });
+}
+</script>
