@@ -38,6 +38,7 @@ public class UsersController : Controller
     {
         var user = new User
         {
+            Id = model.Id,
             Forename = model.Forename ?? "",
             Surname = model.Surname ?? "",
             Email = model.Email ?? "",
