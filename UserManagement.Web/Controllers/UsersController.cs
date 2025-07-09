@@ -1,6 +1,4 @@
 ﻿using System.Linq;
-using System.Net.Mail;
-using System.Text.RegularExpressions;
 using FluentValidation;
 using UserManagement.Models;
 using UserManagement.Services.Domain.Interfaces;
@@ -33,6 +31,22 @@ public class UsersController : Controller
         };
 
         return View(model);
+    }
+
+    [HttpPost("delete")]
+    public IActionResult Delete(UserListItemViewModel model)
+    {
+        var user = new User
+        {
+            Forename = model.Forename ?? "",
+            Surname = model.Surname ?? "",
+            Email = model.Email ?? "",
+            IsActive = model.IsActive,
+            DateOfBirth = model.DateOfBirth
+        };
+
+        _userService.Delete(user);
+        return RedirectToAction(nameof(List));
     }
 
     [HttpGet("add")]
