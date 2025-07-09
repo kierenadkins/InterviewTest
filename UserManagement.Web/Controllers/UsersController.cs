@@ -124,6 +124,24 @@ public class UsersController : Controller
         return RedirectToAction("List");
     }
 
+    [HttpGet("View/{id}")]
+    public IActionResult View(int id)
+    {
+        var user = _userService.GetById(id);
+        if (user == null)
+            return NotFound();
+
+        var model = new ViewUserModel
+        {
+            Forename = user.Forename,
+            Surname = user.Surname,
+            Email = user.Email,
+            IsActive = user.IsActive,
+            DateOfBirth = user.DateOfBirth
+        };
+        return View(model);
+    }
+
 
     public class AddUserModelValidator : AbstractValidator<AddUserModel>
     {
