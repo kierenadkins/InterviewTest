@@ -1,4 +1,8 @@
 ﻿using System.Linq;
+using System.Net.Mail;
+using System.Text.RegularExpressions;
+using FluentValidation;
+using UserManagement.Models;
 using UserManagement.Services.Domain.Interfaces;
 using UserManagement.Web.Models.Users;
 
@@ -29,5 +33,55 @@ public class UsersController : Controller
         };
 
         return View(model);
+    }
+
+    [HttpGet("add")]
+    public IActionResult Add()
+    {
+        return View();
+    }
+
+    [HttpPost("add")]
+    public IActionResult Add(AddUserModel model)
+    {
+        var validator = new AddUserModelValidator().Validate(model);
+
+        if (!validator.IsValid)
+        {
+            model.Errors = validator.Errors.Select(e => e.ErrorMessage).ToList();
+            return View(model);
+        }
+
+        var user = new User
+        {
+            Forename = model.Forename ?? "",
+            Surname = model.Surname ?? "",
+            Email = model.Email ?? "",
+            IsActive = model.IsActive,
+            DateOfBirth = model.DateOfBirth
+        };
+
+        _userService.Save(user);
+
+        return RedirectToAction(nameof(List));
+    }
+
+    public class AddUserModelValidator : AbstractValidator<AddUserModel>
+    {
+        public AddUserModelValidator()
+        {
+            RuleFor(x => x.Forename)
+                .NotEmpty().WithMessage("Forename is required.");
+
+            RuleFor(x => x.Surname)
+                .NotEmpty().WithMessage("Surname is required.");
+
+            RuleFor(x => x.Email)
+                .NotEmpty().WithMessage("Email is required.")
+                .EmailAddress().WithMessage("Email is not valid.");
+
+            RuleFor(x => x.DateOfBirth)
+                .NotEmpty().WithMessage("Date of Birth is required.");
+        }
     }
 }
