@@ -1,5 +1,8 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using FluentValidation;
+using MediatR;
+using UserManagement.Application.Requests.UserR;
 using UserManagement.Models;
 using UserManagement.Services.Domain.Interfaces;
 using UserManagement.Web.Models.Users;
@@ -9,13 +12,14 @@ namespace UserManagement.WebMS.Controllers;
 [Route("users")]
 public class UsersController : Controller
 {
-    private readonly IUserService _userService;
-    public UsersController(IUserService userService) => _userService = userService;
+    private ISender _sender;
+    public UsersController(ISender sender) => _sender = sender;
 
     [HttpGet]
-    public ViewResult List()
+    public async Task<ViewResult> List()
     {
-        var items = _userService.GetAll().Select(p => new UserListItemViewModel
+        var response =  await _sender.Send(new GetAllUsersRequest());
+        var items = response.Select(p => new UserListItemViewModel
         {
             Id = p.Id,
             Forename = p.Forename,
@@ -23,20 +27,20 @@ public class UsersController : Controller
             Email = p.Email,
             IsActive = p.IsActive,
             DateOfBirth = p.DateOfBirth
-        });
+        }).ToList();
 
         var model = new UserListViewModel
         {
-            Items = items.ToList()
+            Items = items
         };
 
         return View(model);
     }
 
     [HttpPost("delete")]
-    public IActionResult Delete(UserListItemViewModel model)
+    public async Task<IActionResult> Delete(UserListItemViewModel model)
     {
-        var user = new User
+        await _sender.Send(new DeleteUserCommand
         {
             Id = model.Id,
             Forename = model.Forename ?? "",
@@ -44,9 +48,8 @@ public class UsersController : Controller
             Email = model.Email ?? "",
             IsActive = model.IsActive,
             DateOfBirth = model.DateOfBirth
-        };
+        });
 
-        _userService.Delete(user);
         return RedirectToAction(nameof(List));
     }
 
@@ -57,7 +60,7 @@ public class UsersController : Controller
     }
 
     [HttpPost("add")]
-    public IActionResult Add(AddUserModel model)
+    public async Task<IActionResult> AddAsync(AddUserModel model)
     {
         var validator = new AddUserModelValidator().Validate(model);
 
@@ -67,24 +70,23 @@ public class UsersController : Controller
             return View(model);
         }
 
-        var user = new User
+        await _sender.Send(new SaveUserCommand
         {
             Forename = model.Forename ?? "",
             Surname = model.Surname ?? "",
             Email = model.Email ?? "",
             IsActive = model.IsActive,
             DateOfBirth = model.DateOfBirth
-        };
-
-        _userService.Save(user);
+        });
 
         return RedirectToAction(nameof(List));
     }
 
     [HttpGet("edit/{id}")]
-    public IActionResult Edit(int id)
+    public async Task<IActionResult> EditAsync(int id)
     {
-        var user = _userService.GetById(id);
+        var user = await _sender.Send(new GetUserRequest { id = id});
+
         if (user == null)
             return NotFound();
 
@@ -101,7 +103,7 @@ public class UsersController : Controller
     }
 
     [HttpPost("edit")]
-    public IActionResult Edit(EditUserModel model)
+    public async Task<IActionResult> EditAsync(EditUserModel model)
     {
         var validator = new EditUserModelValidator().Validate(model);
 
@@ -111,7 +113,7 @@ public class UsersController : Controller
             return View(model);
         }
 
-        var user = new User
+        await _sender.Send(new UpdateUserCommand
         {
             Id = model.Id,
             Forename = model.Forename ?? "",
@@ -119,16 +121,15 @@ public class UsersController : Controller
             Email = model.Email ?? "",
             IsActive = model.IsActive,
             DateOfBirth = model.DateOfBirth
-        };
+        });
 
-        _userService.Update(user);
         return RedirectToAction("List");
     }
 
     [HttpGet("View/{id}")]
-    public IActionResult View(int id)
+    public async Task<IActionResult> ViewAsync(int id)
     {
-        var user = _userService.GetById(id);
+        var user = await _sender.Send(new GetUserRequest { id = id });
         if (user == null)
             return NotFound();
 
@@ -142,7 +143,6 @@ public class UsersController : Controller
         };
         return View(model);
     }
-
 
     public class AddUserModelValidator : AbstractValidator<AddUserModel>
     {
