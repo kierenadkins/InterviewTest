@@ -1,0 +1,24 @@
+﻿@model UserManagement.Web.Models.Users.ViewUserModel
+
+<h1>View User</h1>
+
+<div>
+    <dl>
+        <dt>Forename</dt>
+        <dd>@Model.Forename</dd>
+
+        <dt>Surname</dt>
+        <dd>@Model.Surname</dd>
+
+        <dt>Email</dt>
+        <dd>@Model.Email</dd>
+
+        <dt>Active</dt>
+        <dd>@(Model.IsActive ? "Yes" : "No")</dd>
+
+        <dt>Date of Birth</dt>
+        <dd>@Model.DateOfBirth.ToString("yyyy-MM-dd")</dd>
+    </dl>
+</div>
+
+<a href="/users" class="btn btn-secondary ms-2">Back</a>

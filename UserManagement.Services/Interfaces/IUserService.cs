@@ -5,12 +5,9 @@ namespace UserManagement.Services.Domain.Interfaces;
 
 public interface IUserService 
 {
-    /// <summary>
-    /// Return users by active state
-    /// </summary>
-    /// <param name="isActive"></param>
-    /// <returns></returns>
-    IEnumerable<User> FilterByActive(bool isActive);
     IEnumerable<User> GetAll();
+    public User? GetById(int id);
     void Save (User user);
+    void Delete(User user);
+    void Update(User user);
 }
