@@ -25,4 +25,9 @@
     <ProjectReference Include="..\UserManagement.Services\UserManagement.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commands\" />
+    <Folder Include="Requests\" />
+  </ItemGroup>
+
 </Project>
