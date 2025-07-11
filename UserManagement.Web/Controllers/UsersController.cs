@@ -142,6 +142,7 @@ public class UsersController : Controller
             DateOfBirth = result.user.DateOfBirth,
             Logs = result.logs.Select(x => new LogUserModel
             {
+                UserId = (int)x.UserId,
                 Action = x.Action,
                 Timestamp = x.Timestamp
             }).ToList()
