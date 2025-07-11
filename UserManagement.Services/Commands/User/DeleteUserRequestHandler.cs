@@ -21,7 +21,12 @@ namespace UserManagement.Application.Requests.UserR
     public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, string>
     {
         private readonly IUserService _userService;
-        public DeleteUserCommandHandler(IUserService userService) => _userService = userService;
+        private readonly ILogService _logService;
+        public DeleteUserCommandHandler(IUserService userService, ILogService logService)
+        {
+            _userService = userService;
+            _logService = logService;
+        }
 
         public Task<string> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
         {
@@ -39,7 +44,10 @@ namespace UserManagement.Application.Requests.UserR
 
                 _userService.Delete(user);
 
-                return Task.FromResult("User deleted successfully");
+                var log = "User deleted successfully";
+
+                _logService.Save(new Log { UserId = user.Id, Timestamp = DateTime.Now, Action = log });
+                return Task.FromResult(log);
             }
             catch (Exception)
             {

@@ -9,4 +9,5 @@ public class ViewUserModel
     public string? Email { get; set; }
     public bool IsActive { get; set; }
     public DateOnly DateOfBirth { get; set; }
+    public List<LogUserModel> Logs { get; set; } = new List<LogUserModel>();
 }

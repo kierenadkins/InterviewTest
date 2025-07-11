@@ -21,4 +21,10 @@
     </dl>
 </div>
 
-<a href="/users" class="btn btn-secondary ms-2">Back</a>
+<hr />
+
+<h3>User Logs</h3>
+
+@await Html.PartialAsync("_LogPartial", Model.Logs)
+
+<a href="/users" class="btn btn-secondary mt-3">Back</a>
