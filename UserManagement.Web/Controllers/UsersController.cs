@@ -83,7 +83,8 @@ public class UsersController : Controller
     [HttpGet("edit/{id}")]
     public async Task<IActionResult> EditAsync(int id)
     {
-        var user = await _sender.Send(new GetUserRequest { id = id});
+        var result = await _sender.Send(new GetUserRequest { Id = id});
+        var user = result.user;
 
         if (user == null)
             return NotFound();
@@ -127,17 +128,23 @@ public class UsersController : Controller
     [HttpGet("View/{id}")]
     public async Task<IActionResult> ViewAsync(int id)
     {
-        var user = await _sender.Send(new GetUserRequest { id = id });
-        if (user == null)
+        var result = await _sender.Send(new GetUserRequest { Id = id });
+        
+        if (result.user == null)
             return NotFound();
 
         var model = new ViewUserModel
         {
-            Forename = user.Forename,
-            Surname = user.Surname,
-            Email = user.Email,
-            IsActive = user.IsActive,
-            DateOfBirth = user.DateOfBirth
+            Forename = result.user.Forename,
+            Surname = result.user.Surname,
+            Email = result.user.Email,
+            IsActive = result.user.IsActive,
+            DateOfBirth = result.user.DateOfBirth,
+            Logs = result.logs.Select(x => new LogUserModel
+            {
+                Action = x.Action,
+                Timestamp = x.Timestamp
+            }).ToList()
         };
         return View(model);
     }

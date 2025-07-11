@@ -1,26 +1,49 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using UserManagement.Domain.Objects;
 using UserManagement.Models;
 using UserManagement.Services.Domain.Interfaces;
 
 namespace UserManagement.Application.Requests.UserR
 {
-    //Imagine this is more complex XD
-    public class GetUserRequest : IRequest<User>
+    // Request that asks for a user and their logs by ID
+    public class GetUserRequest : IRequest<GetUserRequestResult>
     {
-        public int id { get; set; }
+        public int Id { get; set; }
     }
 
-    public class GetUserRequestHandler : IRequestHandler<GetUserRequest, User?>
+    // Handler that handles the GetUserRequest
+    public class GetUserRequestHandler : IRequestHandler<GetUserRequest, GetUserRequestResult>
     {
         private readonly IUserService _userService;
-        public GetUserRequestHandler(IUserService userService) => _userService = userService;
+        private readonly ILogService _logService;
 
-        public Task<User?> Handle(GetUserRequest request, CancellationToken cancellationToken)
+        public GetUserRequestHandler(IUserService userService, ILogService logService)
         {
-            var user = _userService.GetById(request.id);
-            return Task.FromResult(user);
+            _userService = userService;
+            _logService = logService;
+        }
+
+        public Task<GetUserRequestResult> Handle(GetUserRequest request, CancellationToken cancellationToken)
+        {
+            var user = _userService.GetById(request.Id);
+            var userLogs = new List<Log>();
+
+            if (user != null)
+            {
+                userLogs = _logService.GetByUserId((int)user.Id);
+
+                return Task.FromResult(new GetUserRequestResult
+                {
+                    user = user,
+                    logs = userLogs
+                });
+            }
+
+            return Task.FromResult(new GetUserRequestResult
+            {});
         }
     }
 }
