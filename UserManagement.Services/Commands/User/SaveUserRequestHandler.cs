@@ -20,7 +20,12 @@ namespace UserManagement.Application.Requests.UserR
     public class SaveUserCommandHandler : IRequestHandler<SaveUserCommand, string>
     {
         private readonly IUserService _userService;
-        public SaveUserCommandHandler(IUserService userService) => _userService = userService;
+        private readonly ILogService _logService;
+        public SaveUserCommandHandler(IUserService userService, ILogService logService)
+        {
+            _userService = userService;
+            _logService = logService;
+        }
 
         public Task<string> Handle(SaveUserCommand request, CancellationToken cancellationToken)
         {
@@ -37,7 +42,10 @@ namespace UserManagement.Application.Requests.UserR
 
                 _userService.Save(user);
 
-                return Task.FromResult("User saved successfully");
+                var log = "User saved successfully";
+
+                _logService.Save(new Log { UserId = user.Id, Timestamp = DateTime.Now, Action = log });
+                return Task.FromResult(log);
             }
             catch (Exception)
             {

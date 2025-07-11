@@ -21,7 +21,12 @@ namespace UserManagement.Application.Requests.UserR
     public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, string>
     {
         private readonly IUserService _userService;
-        public UpdateUserCommandHandler(IUserService userService) => _userService = userService;
+        private readonly ILogService _logService;
+        public UpdateUserCommandHandler(IUserService userService, ILogService logService)
+        {
+            _userService = userService;
+            _logService = logService;
+        }
 
         public Task<string> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
@@ -39,7 +44,10 @@ namespace UserManagement.Application.Requests.UserR
 
                 _userService.Update(user);
 
-                return Task.FromResult("User saved successfully");
+                var log = "User updated successfully";
+
+                _logService.Save(new Log { UserId = user.Id, Timestamp = DateTime.Now, Action = log });
+                return Task.FromResult(log);
             }
             catch (Exception)
             {

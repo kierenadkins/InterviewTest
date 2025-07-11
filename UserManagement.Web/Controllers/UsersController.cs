@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
 using UserManagement.Application.Requests.UserR;
-using UserManagement.Models;
-using UserManagement.Services.Domain.Interfaces;
 using UserManagement.Web.Models.Users;
 
 namespace UserManagement.WebMS.Controllers;
