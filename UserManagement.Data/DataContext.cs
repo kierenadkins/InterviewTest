@@ -32,7 +32,6 @@ public class DataContext : DbContext, IDataContext
         model.Entity<Log>().HasData(new[]
         {
         new Log { Id = 1, UserId = 1, Action = "Created account", Timestamp = new DateTime(2024, 1, 10, 9, 0, 0) },
-        new Log { Id = 1, UserId = 1, Action = "Created account test 2", Timestamp = new DateTime(2024, 1, 10, 9, 0, 0) },
         new Log { Id = 2, UserId = 2, Action = "Logged in", Timestamp = new DateTime(2024, 1, 11, 10, 30, 0) },
         new Log { Id = 3, UserId = 3, Action = "Updated profile", Timestamp = new DateTime(2024, 2, 5, 14, 45, 0) },
         new Log { Id = 4, UserId = 4, Action = "Deactivated account", Timestamp = new DateTime(2024, 2, 20, 16, 0, 0) },
@@ -43,6 +42,7 @@ public class DataContext : DbContext, IDataContext
         new Log { Id = 9, UserId = 9, Action = "Deleted comment", Timestamp = new DateTime(2024, 5, 4, 17, 5, 0) },
         new Log { Id = 10, UserId = 10, Action = "Updated settings", Timestamp = new DateTime(2024, 5, 20, 19, 0, 0) },
         new Log { Id = 11, UserId = 11, Action = "Reset password", Timestamp = new DateTime(2024, 6, 1, 7, 45, 0) },
+        new Log { Id = 12, UserId = 1, Action = "Created account test 2", Timestamp = new DateTime(2024, 1, 10, 9, 0, 0) },
     });
     }
 
